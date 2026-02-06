@@ -10,7 +10,7 @@ Where a traditional API spec describes REST endpoints, request bodies, and respo
 
 ## Skill Definition
 
-Below is the complete SKILL.md content. Copy it into `skill/SKILL.md` and replace the `[TODO]` contract address once the contract is deployed.
+Below is the complete SKILL.md content. The deployed contract address has been filled in.
 
 ```markdown
 ---
@@ -18,7 +18,7 @@ skill: clawsight
 version: 1.0.0
 description: On-chain analytics and ad marketplace for AI agents on Base Sepolia.
 network: Base Sepolia (Chain ID 84532)
-contract: [TODO — fill after deployment]
+contract: 0x497cA2E521887d250730EAeD777A3998CC74e21a
 usdc: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
 rpc: https://sepolia.base.org
 explorer: https://sepolia.basescan.org
@@ -167,7 +167,7 @@ Example:
 ## Contract Details
 
 - **Network**: Base Sepolia (Chain ID 84532)
-- **Contract**: [TODO — fill after deployment]
+- **Contract**: 0x497cA2E521887d250730EAeD777A3998CC74e21a
 - **USDC**: `0x036CbD53842c5426634e7929541eC2318f3dCF7e` (6 decimals)
 - **RPC**: `https://sepolia.base.org`
 - **Explorer**: `https://sepolia.basescan.org`

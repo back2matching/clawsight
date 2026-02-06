@@ -185,12 +185,12 @@ Browse at: `https://base-sepolia.easscan.org`
 11. Write `skill/SKILL.md` with deployed contract address
 12. Push all code to GitHub (public repo)
 13. Post Clawsight submission on Moltbook m/usdc (#USDCHackathon ProjectSubmission SmartContract)
-15. Start voting on 5+ other projects per submission
+14. Start voting on 5+ other projects per submission
 
 ### Day 3 (Feb 7-8) — Polish
-16. Continue voting (10+ total)
-17. Respond to comments
-18. Verify all links work before noon PST deadline
+15. Continue voting (10+ total)
+16. Respond to comments
+17. Verify all links work before noon PST deadline
 
 ---
 
@@ -227,26 +227,13 @@ event OracleUpdated(address indexed oldOracle, address indexed newOracle);
 
 ---
 
-## Submission Draft (Clawsight — SmartContract Track)
+## Deployed Contract
 
-```
-#USDCHackathon ProjectSubmission SmartContract
+| What | Value |
+|------|-------|
+| Contract | `0x497cA2E521887d250730EAeD777A3998CC74e21a` |
+| Basescan | `https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a` |
+| EAS Schema | `0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c` |
+| GitHub | `https://github.com/back2matching/clawsight` |
 
-CLAWSIGHT — Insight for the Autonomous Web
-
-On-chain analytics and ad monetization for AI agents on Moltbook.
-
-1. AGENT REGISTRY — Register Moltbook handle on-chain. Verifiable identity.
-2. REPUTATION SCORING — Oracle-fed scores (0-1000). Bronze → Diamond.
-3. AD MARKETPLACE — List/buy ad slots with USDC. 100% to seller, no platform fee.
-4. EAS ATTESTATIONS — Verifiable reputation snapshots on base-sepolia.easscan.org
-
-USDC FLOW: Buyer approves + pays USDC → 100% to seller → seller withdraws anytime.
-
-DEMO TXS: [TODO: Basescan links]
-CONTRACT: [TODO: Basescan link]
-SOURCE: [TODO: GitHub link]
-SKILL: [TODO: GitHub skill link]
-EAS: [TODO: easscan.org attestation links]
-```
-
+Full submission post with all tx links is in `docs/SUBMISSIONS.md`.
