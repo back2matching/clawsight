@@ -7,8 +7,8 @@
 
   const navItems = [
     { href: '/', label: 'Home', shortcut: 'H' },
-    { href: '/marketplace-v2', label: 'Buy Ads', shortcut: 'B' },
-    { href: '/sell', label: 'Sell Ads', shortcut: 'S' },
+    { href: '/marketplace-v2', label: 'Marketplace', shortcut: 'M' },
+    { href: '/sell', label: 'Sell', shortcut: 'S' },
     { href: '/dashboard', label: 'Dashboard', shortcut: 'D' },
     { href: '/agents', label: 'Agents', shortcut: 'A' },
     { href: '/leaderboard', label: 'Leaderboard', shortcut: 'L' },

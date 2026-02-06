@@ -16,6 +16,10 @@
     createdAt: bigint;
   }
 
+  function isValidHttpUrl(url: string): boolean {
+    return url.startsWith('https://') || url.startsWith('http://');
+  }
+
   let slots: AdSlotV2[] = $state([]);
   let isLoading = $state(true);
   let error = $state<string | null>(null);
@@ -80,12 +84,12 @@
   async function handleBuy() {
     if (!selectedSlot || !$wallet.address) return;
     
-    // Validate
-    if (!imageUrl.startsWith('http')) {
+    // Validate URLs (must be http:// or https://)
+    if (!isValidHttpUrl(imageUrl)) {
       buyError = 'Image URL must start with http:// or https://';
       return;
     }
-    if (!clickUrl.startsWith('http')) {
+    if (!isValidHttpUrl(clickUrl)) {
       buyError = 'Click URL must start with http:// or https://';
       return;
     }
@@ -200,7 +204,7 @@
           <!-- Footer -->
           <div class="px-5 py-3 border-t border-abyss-750/50 flex items-center justify-between">
             <div>
-              <a href="/agent/{slot.seller}" class="text-xs font-mono text-abyss-500 hover:text-signal-teal transition-colors">
+              <a href="/agent/{slot.seller}" class="text-xs font-mono text-abyss-500 hover:text-signal-teal transition-colors cursor-pointer">
                 {formatAddress(slot.seller)}
               </a>
               <div class="text-[11px] text-abyss-600 mt-0.5">{timeAgo(slot.createdAt)}</div>
@@ -208,7 +212,7 @@
             <button
               onclick={() => openBuyModal(slot)}
               disabled={!$wallet.address}
-              class="px-3 py-1.5 text-sm font-medium bg-usdc/20 text-usdc hover:bg-usdc/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3 py-1.5 text-sm font-medium bg-usdc/20 text-usdc hover:bg-usdc/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {formatUsdc(slot.priceUsdc)} USDC
             </button>
@@ -221,11 +225,13 @@
 
 <!-- Buy Modal -->
 {#if showBuyModal && selectedSlot}
-  <div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onclick={closeBuyModal}>
+  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
+  <div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-label="Buy ad slot" onclick={closeBuyModal}>
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
     <div class="bg-abyss-900 border border-abyss-700 rounded-xl max-w-lg w-full p-6" onclick={(e) => e.stopPropagation()}>
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-lg font-semibold text-abyss-50">Buy Ad Slot</h2>
-        <button onclick={closeBuyModal} class="text-abyss-400 hover:text-abyss-200">
+        <button onclick={closeBuyModal} class="text-abyss-400 hover:text-abyss-200 cursor-pointer" aria-label="Close modal">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -248,8 +254,9 @@
       <!-- Ad Content Form -->
       <div class="space-y-4">
         <div>
-          <label class="block text-xs text-abyss-400 mb-1.5">Ad Image URL *</label>
+          <label for="buy-image-url" class="block text-xs text-abyss-400 mb-1.5">Ad Image URL *</label>
           <input
+            id="buy-image-url"
             type="url"
             bind:value={imageUrl}
             placeholder="https://your-cdn.com/ad-image.png"
@@ -259,8 +266,9 @@
         </div>
 
         <div>
-          <label class="block text-xs text-abyss-400 mb-1.5">Click URL *</label>
+          <label for="buy-click-url" class="block text-xs text-abyss-400 mb-1.5">Click URL *</label>
           <input
+            id="buy-click-url"
             type="url"
             bind:value={clickUrl}
             placeholder="https://yoursite.com/landing"
@@ -269,8 +277,9 @@
         </div>
 
         <div>
-          <label class="block text-xs text-abyss-400 mb-1.5">Ad Text (max 280 chars)</label>
+          <label for="buy-ad-text" class="block text-xs text-abyss-400 mb-1.5">Ad Text (max 280 chars)</label>
           <textarea
+            id="buy-ad-text"
             bind:value={adText}
             placeholder="Check out our amazing product..."
             rows="2"

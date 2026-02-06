@@ -111,8 +111,9 @@
       <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-6">
         <!-- Description -->
         <div>
-          <label class="block text-sm font-medium text-abyss-200 mb-2">What are you offering?</label>
+          <label for="sell-description" class="block text-sm font-medium text-abyss-200 mb-2">What are you offering?</label>
           <textarea
+            id="sell-description"
             bind:value={description}
             placeholder="E.g., Featured mention in my Moltbook posts for 7 days. I have 1,200 followers and post daily about AI agents."
             rows="4"
@@ -124,13 +125,14 @@
 
         <!-- Placement -->
         <div>
+          <!-- svelte-ignore a11y_label_has_associated_control -->
           <label class="block text-sm font-medium text-abyss-200 mb-2">Where will the ad appear?</label>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {#each placements as p}
               <button
                 type="button"
                 onclick={() => placement = p.value}
-                class="p-3 text-left rounded-lg border transition-colors {placement === p.value ? 'bg-signal-teal/10 border-signal-teal/50' : 'bg-abyss-800 border-abyss-700 hover:border-abyss-600'}"
+                class="p-3 text-left rounded-lg border transition-colors cursor-pointer {placement === p.value ? 'bg-signal-teal/10 border-signal-teal/50' : 'bg-abyss-800 border-abyss-700 hover:border-abyss-600'}"
               >
                 <p class="text-sm font-medium text-abyss-100">{p.label}</p>
                 <p class="text-xs text-abyss-500 mt-0.5">{p.desc}</p>
@@ -141,13 +143,14 @@
 
         <!-- Duration -->
         <div>
+          <!-- svelte-ignore a11y_label_has_associated_control -->
           <label class="block text-sm font-medium text-abyss-200 mb-2">Duration</label>
           <div class="flex flex-wrap gap-2">
             {#each durations as d}
               <button
                 type="button"
                 onclick={() => durationHours = d.hours}
-                class="px-4 py-2 text-sm rounded-lg border transition-colors {durationHours === d.hours ? 'bg-signal-teal/10 border-signal-teal/50 text-signal-teal' : 'bg-abyss-800 border-abyss-700 text-abyss-300 hover:border-abyss-600'}"
+                class="px-4 py-2 text-sm rounded-lg border transition-colors cursor-pointer {durationHours === d.hours ? 'bg-signal-teal/10 border-signal-teal/50 text-signal-teal' : 'bg-abyss-800 border-abyss-700 text-abyss-300 hover:border-abyss-600'}"
               >
                 {d.label}
               </button>
@@ -157,10 +160,11 @@
 
         <!-- Price -->
         <div>
-          <label class="block text-sm font-medium text-abyss-200 mb-2">Price (USDC)</label>
+          <label for="sell-price" class="block text-sm font-medium text-abyss-200 mb-2">Price (USDC)</label>
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-abyss-500">$</span>
             <input
+              id="sell-price"
               type="text"
               bind:value={priceUsdc}
               placeholder="10.00"
@@ -181,7 +185,7 @@
         <button
           type="submit"
           disabled={isSubmitting || !$wallet.address}
-          class="w-full py-3 text-sm font-medium bg-signal-teal hover:bg-signal-teal/80 text-abyss-900 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full py-3 text-sm font-medium bg-signal-teal hover:bg-signal-teal/80 text-abyss-900 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {#if !$wallet.address}
             Connect Wallet to List

@@ -41,12 +41,14 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
     }
 
     struct Purchase {
+        uint256 id;
         uint256 slotId;
         address buyer;
         address seller;
         uint256 priceUsdc;
         AdContent content;
         uint256 purchasedAt;
+        uint256 deliveredAt;
         uint256 deliveryDeadline;
         PurchaseStatus status;
     }
@@ -302,6 +304,7 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
         uint256 deliveryDeadline = block.timestamp + DELIVERY_WINDOW;
 
         purchases[purchaseId] = Purchase({
+            id: purchaseId,
             slotId: slotId,
             buyer: msg.sender,
             seller: slot.seller,
@@ -312,9 +315,13 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
                 text: text
             }),
             purchasedAt: block.timestamp,
+            deliveredAt: 0,
             deliveryDeadline: deliveryDeadline,
             status: PurchaseStatus.Pending
         });
+
+        // Deactivate slot after purchase (one buyer per slot)
+        slot.active = false;
 
         // Lock funds in escrow
         escrow[purchaseId] = slot.priceUsdc;
@@ -330,11 +337,13 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
      * @param purchaseId The purchase to mark delivered
      */
     function markDelivered(uint256 purchaseId) external whenNotPaused {
+        require(purchaseId < nextPurchaseId, "Invalid purchase ID");
         Purchase storage purchase = purchases[purchaseId];
         require(purchase.seller == msg.sender, "Not seller");
         require(purchase.status == PurchaseStatus.Pending, "Not pending");
 
         purchase.status = PurchaseStatus.Delivered;
+        purchase.deliveredAt = block.timestamp;
 
         emit AdDelivered(purchaseId, msg.sender);
     }
@@ -344,10 +353,11 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
      * @param purchaseId The purchase to confirm
      */
     function confirmDelivery(uint256 purchaseId) external whenNotPaused {
+        require(purchaseId < nextPurchaseId, "Invalid purchase ID");
         Purchase storage purchase = purchases[purchaseId];
         require(purchase.buyer == msg.sender, "Not buyer");
         require(
-            purchase.status == PurchaseStatus.Delivered || 
+            purchase.status == PurchaseStatus.Delivered ||
             purchase.status == PurchaseStatus.Pending,
             "Cannot confirm"
         );
@@ -367,11 +377,12 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
      * @param reason Why you're disputing
      */
     function disputeDelivery(uint256 purchaseId, string calldata reason) external whenNotPaused {
+        require(purchaseId < nextPurchaseId, "Invalid purchase ID");
         Purchase storage purchase = purchases[purchaseId];
         require(purchase.buyer == msg.sender, "Not buyer");
         require(purchase.status == PurchaseStatus.Delivered, "Not delivered");
         require(
-            block.timestamp <= purchase.purchasedAt + DELIVERY_WINDOW + DISPUTE_WINDOW,
+            block.timestamp <= purchase.deliveredAt + DISPUTE_WINDOW,
             "Dispute window passed"
         );
         require(bytes(reason).length > 0 && bytes(reason).length <= 500, "Invalid reason");
@@ -385,7 +396,8 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
      * @notice Oracle resolves dispute in buyer's favor (refund)
      * @param purchaseId The disputed purchase
      */
-    function resolveDisputeForBuyer(uint256 purchaseId) external onlyOracle {
+    function resolveDisputeForBuyer(uint256 purchaseId) external onlyOracle nonReentrant {
+        require(purchaseId < nextPurchaseId, "Invalid purchase ID");
         Purchase storage purchase = purchases[purchaseId];
         require(purchase.status == PurchaseStatus.Disputed, "Not disputed");
 
@@ -403,7 +415,8 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
      * @notice Oracle resolves dispute in seller's favor (release funds)
      * @param purchaseId The disputed purchase
      */
-    function resolveDisputeForSeller(uint256 purchaseId) external onlyOracle {
+    function resolveDisputeForSeller(uint256 purchaseId) external onlyOracle nonReentrant {
+        require(purchaseId < nextPurchaseId, "Invalid purchase ID");
         Purchase storage purchase = purchases[purchaseId];
         require(purchase.status == PurchaseStatus.Disputed, "Not disputed");
 
@@ -421,10 +434,11 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
      * @param purchaseId The purchase to complete
      */
     function autoComplete(uint256 purchaseId) external whenNotPaused {
+        require(purchaseId < nextPurchaseId, "Invalid purchase ID");
         Purchase storage purchase = purchases[purchaseId];
         require(purchase.status == PurchaseStatus.Delivered, "Not delivered");
         require(
-            block.timestamp > purchase.purchasedAt + DELIVERY_WINDOW + DISPUTE_WINDOW,
+            block.timestamp > purchase.deliveredAt + DISPUTE_WINDOW,
             "Dispute window not passed"
         );
 
@@ -442,6 +456,7 @@ contract ClawsightV2 is Ownable, ReentrancyGuard, Pausable {
      * @param purchaseId The purchase to refund
      */
     function autoRefund(uint256 purchaseId) external whenNotPaused {
+        require(purchaseId < nextPurchaseId, "Invalid purchase ID");
         Purchase storage purchase = purchases[purchaseId];
         require(purchase.status == PurchaseStatus.Pending, "Not pending");
         require(block.timestamp > purchase.deliveryDeadline, "Delivery deadline not passed");

@@ -6,11 +6,11 @@ describe("ClawsightV2", function () {
   let clawsight;
   let usdc;
   let owner, oracle, seller, buyer, other;
-  
+
   const USDC_DECIMALS = 6;
   const ONE_USDC = ethers.parseUnits("1", USDC_DECIMALS);
   const TEN_USDC = ethers.parseUnits("10", USDC_DECIMALS);
-  
+
   const DELIVERY_WINDOW = 7 * 24 * 60 * 60; // 7 days
   const DISPUTE_WINDOW = 3 * 24 * 60 * 60;  // 3 days
 
@@ -89,6 +89,7 @@ describe("ClawsightV2", function () {
       );
 
       const purchase = await clawsight.getPurchase(0);
+      expect(purchase.id).to.equal(0);
       expect(purchase.buyer).to.equal(buyer.address);
       expect(purchase.seller).to.equal(seller.address);
       expect(purchase.priceUsdc).to.equal(TEN_USDC);
@@ -96,15 +97,35 @@ describe("ClawsightV2", function () {
       expect(purchase.content.clickUrl).to.equal("https://mysite.com");
       expect(purchase.content.text).to.equal("Check out our product!");
       expect(purchase.status).to.equal(0); // Pending
+      expect(purchase.deliveredAt).to.equal(0); // Not delivered yet
     });
 
     it("locks funds in escrow", async function () {
       const buyerBalanceBefore = await usdc.balanceOf(buyer.address);
-      
+
       await clawsight.connect(buyer).buyAdSlot(0, "https://img.com/a.png", "https://a.com", "Ad");
-      
+
       expect(await clawsight.getEscrow(0)).to.equal(TEN_USDC);
       expect(await usdc.balanceOf(buyer.address)).to.equal(buyerBalanceBefore - TEN_USDC);
+    });
+
+    it("deactivates slot after purchase", async function () {
+      await clawsight.connect(buyer).buyAdSlot(0, "https://img.com/a.png", "https://a.com", "Ad");
+
+      const slot = await clawsight.getAdSlot(0);
+      expect(slot.active).to.be.false;
+    });
+
+    it("rejects buying an already-purchased slot", async function () {
+      await clawsight.connect(buyer).buyAdSlot(0, "https://img.com/a.png", "https://a.com", "Ad");
+
+      // Mint USDC for other buyer
+      await usdc.mint(other.address, TEN_USDC);
+      await usdc.connect(other).approve(await clawsight.getAddress(), ethers.MaxUint256);
+
+      await expect(
+        clawsight.connect(other).buyAdSlot(0, "https://img.com/b.png", "https://b.com", "Ad 2")
+      ).to.be.revertedWith("Slot not active");
     });
 
     it("rejects empty image URL", async function () {
@@ -142,9 +163,10 @@ describe("ClawsightV2", function () {
 
     it("seller can mark as delivered", async function () {
       await clawsight.connect(seller).markDelivered(0);
-      
+
       const purchase = await clawsight.getPurchase(0);
       expect(purchase.status).to.equal(1); // Delivered
+      expect(purchase.deliveredAt).to.be.gt(0);
     });
 
     it("only seller can mark delivered", async function () {
@@ -153,10 +175,16 @@ describe("ClawsightV2", function () {
       ).to.be.revertedWith("Not seller");
     });
 
+    it("rejects invalid purchase ID", async function () {
+      await expect(
+        clawsight.connect(seller).markDelivered(999)
+      ).to.be.revertedWith("Invalid purchase ID");
+    });
+
     it("buyer can confirm delivery (releases funds)", async function () {
       await clawsight.connect(seller).markDelivered(0);
       await clawsight.connect(buyer).confirmDelivery(0);
-      
+
       const purchase = await clawsight.getPurchase(0);
       expect(purchase.status).to.equal(2); // Confirmed
       expect(await clawsight.getBalance(seller.address)).to.equal(TEN_USDC);
@@ -165,7 +193,7 @@ describe("ClawsightV2", function () {
 
     it("buyer can confirm even if not marked delivered (early release)", async function () {
       await clawsight.connect(buyer).confirmDelivery(0);
-      
+
       const purchase = await clawsight.getPurchase(0);
       expect(purchase.status).to.equal(2); // Confirmed
       expect(await clawsight.getBalance(seller.address)).to.equal(TEN_USDC);
@@ -191,25 +219,42 @@ describe("ClawsightV2", function () {
 
     it("buyer can dispute within window", async function () {
       await clawsight.connect(buyer).disputeDelivery(0, "Ad was not displayed");
-      
+
       const purchase = await clawsight.getPurchase(0);
       expect(purchase.status).to.equal(3); // Disputed
     });
 
-    it("cannot dispute after window", async function () {
-      await time.increase(DELIVERY_WINDOW + DISPUTE_WINDOW + 1);
-      
+    it("cannot dispute after dispute window (3 days from delivery)", async function () {
+      await time.increase(DISPUTE_WINDOW + 1);
+
       await expect(
         clawsight.connect(buyer).disputeDelivery(0, "Too late")
       ).to.be.revertedWith("Dispute window passed");
     });
 
+    it("dispute window is relative to delivery time, not purchase time", async function () {
+      // Advance to day 6 (still within delivery window), then seller delivers
+      await time.increase(6 * 24 * 60 * 60);
+
+      // Create a new slot+purchase to test timing
+      await clawsight.connect(seller).listAdSlot(ONE_USDC, "Late delivery test", "moltbook", 168);
+      await clawsight.connect(buyer).buyAdSlot(1, "https://img.com/b.png", "https://b.com", "Ad 2");
+      await clawsight.connect(seller).markDelivered(1);
+
+      // 2 days after delivery — should still be within dispute window
+      await time.increase(2 * 24 * 60 * 60);
+      await clawsight.connect(buyer).disputeDelivery(1, "Still within window");
+
+      const purchase = await clawsight.getPurchase(1);
+      expect(purchase.status).to.equal(3); // Disputed
+    });
+
     it("oracle can resolve dispute for buyer (refund)", async function () {
       await clawsight.connect(buyer).disputeDelivery(0, "Not delivered");
-      
+
       const buyerBalanceBefore = await usdc.balanceOf(buyer.address);
       await clawsight.connect(oracle).resolveDisputeForBuyer(0);
-      
+
       expect(await usdc.balanceOf(buyer.address)).to.equal(buyerBalanceBefore + TEN_USDC);
       expect(await clawsight.getPurchase(0).then(p => p.status)).to.equal(4); // Refunded
     });
@@ -217,17 +262,23 @@ describe("ClawsightV2", function () {
     it("oracle can resolve dispute for seller", async function () {
       await clawsight.connect(buyer).disputeDelivery(0, "Fake dispute");
       await clawsight.connect(oracle).resolveDisputeForSeller(0);
-      
+
       expect(await clawsight.getBalance(seller.address)).to.equal(TEN_USDC);
       expect(await clawsight.getPurchase(0).then(p => p.status)).to.equal(5); // Completed
     });
 
     it("only oracle can resolve disputes", async function () {
       await clawsight.connect(buyer).disputeDelivery(0, "Not delivered");
-      
+
       await expect(
         clawsight.connect(other).resolveDisputeForBuyer(0)
       ).to.be.revertedWith("Only oracle");
+    });
+
+    it("rejects invalid purchase ID for dispute resolution", async function () {
+      await expect(
+        clawsight.connect(oracle).resolveDisputeForBuyer(999)
+      ).to.be.revertedWith("Invalid purchase ID");
     });
 
     it("emits AdDisputed and AdRefunded events", async function () {
@@ -249,19 +300,20 @@ describe("ClawsightV2", function () {
       await clawsight.connect(buyer).buyAdSlot(0, "https://img.com/a.png", "https://a.com", "Ad");
     });
 
-    it("auto-completes after dispute window passes (no dispute)", async function () {
+    it("auto-completes after dispute window passes from delivery (not purchase)", async function () {
       await clawsight.connect(seller).markDelivered(0);
-      await time.increase(DELIVERY_WINDOW + DISPUTE_WINDOW + 1);
-      
+      // Dispute window = 3 days from delivery
+      await time.increase(DISPUTE_WINDOW + 1);
+
       await clawsight.autoComplete(0);
-      
+
       expect(await clawsight.getBalance(seller.address)).to.equal(TEN_USDC);
       expect(await clawsight.getPurchase(0).then(p => p.status)).to.equal(5); // Completed
     });
 
-    it("cannot auto-complete before window passes", async function () {
+    it("cannot auto-complete before dispute window passes", async function () {
       await clawsight.connect(seller).markDelivered(0);
-      
+
       await expect(
         clawsight.autoComplete(0)
       ).to.be.revertedWith("Dispute window not passed");
@@ -269,10 +321,10 @@ describe("ClawsightV2", function () {
 
     it("auto-refunds if seller doesn't deliver in time", async function () {
       await time.increase(DELIVERY_WINDOW + 1);
-      
+
       const buyerBalanceBefore = await usdc.balanceOf(buyer.address);
       await clawsight.autoRefund(0);
-      
+
       expect(await usdc.balanceOf(buyer.address)).to.equal(buyerBalanceBefore + TEN_USDC);
       expect(await clawsight.getPurchase(0).then(p => p.status)).to.equal(4); // Refunded
     });
@@ -283,13 +335,50 @@ describe("ClawsightV2", function () {
       ).to.be.revertedWith("Delivery deadline not passed");
     });
 
-    it("emits AdCompleted and AdRefunded events", async function () {
+    it("rejects invalid purchase ID", async function () {
+      await expect(
+        clawsight.autoComplete(999)
+      ).to.be.revertedWith("Invalid purchase ID");
+
+      await expect(
+        clawsight.autoRefund(999)
+      ).to.be.revertedWith("Invalid purchase ID");
+    });
+
+    it("emits AdCompleted event", async function () {
       await clawsight.connect(seller).markDelivered(0);
-      await time.increase(DELIVERY_WINDOW + DISPUTE_WINDOW + 1);
-      
+      await time.increase(DISPUTE_WINDOW + 1);
+
       await expect(clawsight.autoComplete(0))
         .to.emit(clawsight, "AdCompleted")
         .withArgs(0);
+    });
+  });
+
+  describe("Slot Deactivation", function () {
+    it("slot is removed from active slots after purchase", async function () {
+      await clawsight.connect(seller).listAdSlot(TEN_USDC, "Slot 1", "moltbook", 168);
+      await clawsight.connect(seller).listAdSlot(ONE_USDC, "Slot 2", "chatr.ai", 24);
+
+      let active = await clawsight.getActiveSlots();
+      expect(active.length).to.equal(2);
+
+      await clawsight.connect(buyer).buyAdSlot(0, "https://img.com/a.png", "https://a.com", "Ad");
+
+      active = await clawsight.getActiveSlots();
+      expect(active.length).to.equal(1);
+      expect(active[0].id).to.equal(1); // Only slot 1 remains
+    });
+
+    it("seller can cancel and relist after purchase", async function () {
+      await clawsight.connect(seller).listAdSlot(TEN_USDC, "Original", "moltbook", 168);
+      await clawsight.connect(buyer).buyAdSlot(0, "https://img.com/a.png", "https://a.com", "Ad");
+
+      // Seller can list a new slot
+      await clawsight.connect(seller).listAdSlot(TEN_USDC, "New listing", "moltbook", 168);
+      const slot = await clawsight.getAdSlot(1);
+      expect(slot.active).to.be.true;
+      expect(slot.description).to.equal("New listing");
     });
   });
 
@@ -302,19 +391,21 @@ describe("ClawsightV2", function () {
 
     it("getActiveSlots returns only active slots", async function () {
       const slots = await clawsight.getActiveSlots();
-      expect(slots.length).to.equal(2);
+      expect(slots.length).to.equal(1); // Slot 0 deactivated after purchase
     });
 
-    it("getPurchasesByBuyer returns buyer's purchases", async function () {
+    it("getPurchasesByBuyer returns buyer's purchases with correct ID", async function () {
       const purchases = await clawsight.getPurchasesByBuyer(buyer.address);
       expect(purchases.length).to.equal(1);
       expect(purchases[0].buyer).to.equal(buyer.address);
+      expect(purchases[0].id).to.equal(0);
     });
 
-    it("getPurchasesBySeller returns seller's purchases", async function () {
+    it("getPurchasesBySeller returns seller's purchases with correct ID", async function () {
       const purchases = await clawsight.getPurchasesBySeller(seller.address);
       expect(purchases.length).to.equal(1);
       expect(purchases[0].seller).to.equal(seller.address);
+      expect(purchases[0].id).to.equal(0);
     });
   });
 
@@ -327,9 +418,9 @@ describe("ClawsightV2", function () {
 
     it("seller can claim revenue", async function () {
       const sellerBalanceBefore = await usdc.balanceOf(seller.address);
-      
+
       await clawsight.connect(seller).claimRevenue();
-      
+
       expect(await usdc.balanceOf(seller.address)).to.equal(sellerBalanceBefore + TEN_USDC);
       expect(await clawsight.getBalance(seller.address)).to.equal(0);
     });
@@ -342,7 +433,7 @@ describe("ClawsightV2", function () {
 
     it("reverts if no balance", async function () {
       await clawsight.connect(seller).claimRevenue();
-      
+
       await expect(
         clawsight.connect(seller).claimRevenue()
       ).to.be.revertedWith("No balance");

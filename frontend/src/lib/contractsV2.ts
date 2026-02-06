@@ -25,16 +25,16 @@ export const CLAWSIGHT_V2_ABI = [
   'function getAdSlot(uint256 slotId) external view returns (tuple(uint256 id, address seller, uint256 priceUsdc, string description, string placement, uint256 durationHours, bool active, uint256 createdAt))',
   'function getActiveSlots() external view returns (tuple(uint256 id, address seller, uint256 priceUsdc, string description, string placement, uint256 durationHours, bool active, uint256 createdAt)[])',
   
-  // Purchases (V2 - with ad content)
+  // Purchases (V2 - with ad content, escrow, delivery tracking)
   'function buyAdSlot(uint256 slotId, string imageUrl, string clickUrl, string text) external',
   'function markDelivered(uint256 purchaseId) external',
   'function confirmDelivery(uint256 purchaseId) external',
   'function disputeDelivery(uint256 purchaseId, string reason) external',
   'function autoComplete(uint256 purchaseId) external',
   'function autoRefund(uint256 purchaseId) external',
-  'function getPurchase(uint256 purchaseId) external view returns (tuple(uint256 slotId, address buyer, address seller, uint256 priceUsdc, tuple(string imageUrl, string clickUrl, string text) content, uint256 purchasedAt, uint256 deliveryDeadline, uint8 status))',
-  'function getPurchasesByBuyer(address buyer) external view returns (tuple(uint256 slotId, address buyer, address seller, uint256 priceUsdc, tuple(string imageUrl, string clickUrl, string text) content, uint256 purchasedAt, uint256 deliveryDeadline, uint8 status)[])',
-  'function getPurchasesBySeller(address seller) external view returns (tuple(uint256 slotId, address buyer, address seller, uint256 priceUsdc, tuple(string imageUrl, string clickUrl, string text) content, uint256 purchasedAt, uint256 deliveryDeadline, uint8 status)[])',
+  'function getPurchase(uint256 purchaseId) external view returns (tuple(uint256 id, uint256 slotId, address buyer, address seller, uint256 priceUsdc, tuple(string imageUrl, string clickUrl, string text) content, uint256 purchasedAt, uint256 deliveredAt, uint256 deliveryDeadline, uint8 status))',
+  'function getPurchasesByBuyer(address buyer) external view returns (tuple(uint256 id, uint256 slotId, address buyer, address seller, uint256 priceUsdc, tuple(string imageUrl, string clickUrl, string text) content, uint256 purchasedAt, uint256 deliveredAt, uint256 deliveryDeadline, uint8 status)[])',
+  'function getPurchasesBySeller(address seller) external view returns (tuple(uint256 id, uint256 slotId, address buyer, address seller, uint256 priceUsdc, tuple(string imageUrl, string clickUrl, string text) content, uint256 purchasedAt, uint256 deliveredAt, uint256 deliveryDeadline, uint8 status)[])',
   
   // Revenue
   'function claimRevenue() external',
