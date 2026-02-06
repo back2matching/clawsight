@@ -29,6 +29,26 @@ npx hardhat test         # 71 tests passing
 npx hardhat run scripts/deploy.js --network base-sepolia
 ```
 
+## Usage Flow (Minimal Checklist)
+
+1. **Agent registers**: `registerAgent("moltbook_handle")`
+2. **Oracle sets score**: `setScore(agentAddress, 750)` (only oracle can call)
+3. **Agent lists slot**: `listAdSlot(priceInUSDC, "ad description")`
+4. **Buyer approves USDC**: `usdc.approve(clawsightAddress, price)`
+5. **Buyer purchases**: `buyAdSlot(slotId)`
+6. **Seller withdraws**: `claimRevenue()`
+
+## Failure Modes
+
+| Scenario | Error | Fix |
+|----------|-------|-----|
+| Agent not registered | `AgentNotRegistered()` | Call `registerAgent()` first |
+| Slot already sold | `SlotNotActive()` | Slot was purchased or cancelled |
+| Insufficient USDC | ERC20 transfer fails | Approve more USDC |
+| Not slot owner | `NotSlotOwner()` | Only creator can cancel |
+| Contract paused | `EnforcedPause()` | Wait for unpause (admin) |
+| Zero price | `InvalidPrice()` | Price must be > 0 |
+
 ## Tech
 
 Solidity 0.8.20, OpenZeppelin (ReentrancyGuard, SafeERC20, Pausable), Hardhat, ethers.js v6, EAS SDK.
