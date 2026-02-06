@@ -23,7 +23,8 @@
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "hardhat": "^2.19.0"
+    "hardhat": "^2.19.0",
+    "sharp": "^0.34.5"
   },
   "dependencies": {
     "@ethereum-attestation-service/eas-sdk": "^2.0.0",
