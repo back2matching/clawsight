@@ -10,9 +10,9 @@ Complete every item before posting the submission on Moltbook.
 
 ### Contract
 
-- [ ] Contract deployed on Base Sepolia (chain ID 84532)
-- [ ] Contract verified on Basescan (https://sepolia.basescan.org)
-- [ ] Record deployed contract address: ______________________________
+- [x] Contract deployed on Base Sepolia (chain ID 84532)
+- [ ] Contract verified on Basescan (needs API key)
+- [x] Contract address: `0x497cA2E521887d250730EAeD777A3998CC74e21a`
 
 ### Demo Transactions
 
@@ -25,34 +25,30 @@ Complete every item before posting the submission on Moltbook.
 
 ### EAS (Ethereum Attestation Service)
 
-- [ ] EAS schema registered on SchemaRegistry (`0x4200000000000000000000000000000000000020`)
-- [ ] Record schema UID: ______________________________
-- [ ] Attestations created for each demo agent
-- [ ] Collect all attestation UIDs and easscan.org links
+- [x] EAS schema registered on SchemaRegistry (`0x4200000000000000000000000000000000000020`)
+- [x] Schema UID: `0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c`
+- [x] 3 attestations created (agent_alpha, agent_beta, agent_gamma)
+- [x] All attestation UIDs and easscan.org links collected
 
 ### Code and Documentation
 
-- [ ] GitHub repo set to public
-- [ ] `skill/SKILL.md` written with deployed contract address filled in
-- [ ] All code pushed (contracts, scripts, tests, skill)
+- [x] GitHub repo set to public: https://github.com/back2matching/clawsight
+- [x] `skill/SKILL.md` written with deployed contract address filled in
+- [x] All code pushed (contracts, scripts, tests, skill)
 
 ### Links to Collect Before Posting
 
 ```
-CONTRACT:  https://sepolia.basescan.org/address/[CONTRACT_ADDRESS]
-TX 1 (register agent 1):  https://sepolia.basescan.org/tx/[TX_HASH]
-TX 2 (register agent 2):  https://sepolia.basescan.org/tx/[TX_HASH]
-TX 3 (register agent 3):  https://sepolia.basescan.org/tx/[TX_HASH]
-TX 4 (set scores):        https://sepolia.basescan.org/tx/[TX_HASH]
-TX 5 (list ad slot):      https://sepolia.basescan.org/tx/[TX_HASH]
-TX 6 (buy ad slot):       https://sepolia.basescan.org/tx/[TX_HASH]
-TX 7 (claim revenue):     https://sepolia.basescan.org/tx/[TX_HASH]
-EAS SCHEMA:    https://base-sepolia.easscan.org/schema/view/[SCHEMA_UID]
-ATTESTATION 1: https://base-sepolia.easscan.org/attestation/view/[ATTESTATION_UID]
-ATTESTATION 2: https://base-sepolia.easscan.org/attestation/view/[ATTESTATION_UID]
-ATTESTATION 3: https://base-sepolia.easscan.org/attestation/view/[ATTESTATION_UID]
-SOURCE:  https://github.com/[USERNAME]/clawsight
-SKILL:   https://github.com/[USERNAME]/clawsight/blob/main/skill/SKILL.md
+CONTRACT:     https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a
+TX (register): https://sepolia.basescan.org/tx/0x558e3df83a7414445356f60c9ecf6351297da4daff7c2466f4b8815c0a6b78b4
+TX (score):    https://sepolia.basescan.org/tx/0xa9ef4949a488b4638b0e842b4ce5ce9e7d7163c233bf4a5c9d78aede3b7cfc12
+TX (list ad):  https://sepolia.basescan.org/tx/0xeaf31f95a31f6ad9dde8c6442339a0b2ab3df876136abd1ffc5a6667e6a02225
+EAS SCHEMA:    https://base-sepolia.easscan.org/schema/view/0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c
+ATTESTATION 1: https://base-sepolia.easscan.org/attestation/view/0x3b068403d2b732305bc9fa905d144327b272dfb8dc4eca378e139572bf962c35
+ATTESTATION 2: https://base-sepolia.easscan.org/attestation/view/0x8b29c6ac47a2ecea522379b362822878fac1853bad5fc366bf31bf284df62f46
+ATTESTATION 3: https://base-sepolia.easscan.org/attestation/view/0xedfd18b8476fe4855d3c386cee6a401b2cb3e11862db6490827f091ca98ab5c1
+SOURCE:        https://github.com/back2matching/clawsight
+SKILL:         https://github.com/back2matching/clawsight/blob/main/skill/SKILL.md
 ```
 
 ---
@@ -74,12 +70,12 @@ WHAT IT DOES:
 
 2. REPUTATION SCORING -- An oracle pushes scores from 0 to 1000 on-chain. Five tiers: Bronze (0-99), Silver (100-299), Gold (300-599), Platinum (600-899), Diamond (900-1000). Scores are computed off-chain from karma, followers, posts, and comments.
 
-3. AD MARKETPLACE -- Registered agents list ad slots with a USDC price and description. Other agents buy slots by approving and transferring USDC through the contract. 90% goes to the seller, 10% to the protocol. Sellers withdraw their balance at any time.
+3. AD MARKETPLACE -- Registered agents list ad slots with a USDC price and description. Other agents buy slots by approving and transferring USDC through the contract. 100% goes to the seller. Sellers withdraw their balance at any time.
 
 4. EAS ATTESTATIONS -- Reputation snapshots are recorded as on-chain attestations via the Ethereum Attestation Service on Base Sepolia. Each attestation includes agent name, wallet, score, karma, followers, and platform. Browsable on easscan.org.
 
 USDC FLOW:
-Buyer approves USDC -> calls buyAdSlot -> contract splits 90/10 -> seller claims revenue anytime via claimRevenue. All USDC, all on-chain, all verifiable.
+Buyer approves USDC -> calls buyAdSlot -> 100% credited to seller -> seller claims revenue anytime via claimRevenue. All USDC, all on-chain, all verifiable.
 
 WHY IT MATTERS:
 As AI agents become participants in social platforms, they need the same primitives humans have: identity, reputation, and monetization. Clawsight puts all three on-chain so agents (and the humans behind them) have transparent, verifiable infrastructure.
@@ -87,21 +83,21 @@ As AI agents become participants in social platforms, they need the same primiti
 TECH STACK:
 Solidity 0.8.20, OpenZeppelin (Ownable, ReentrancyGuard, Pausable, SafeERC20), Hardhat, ethers.js v6, EAS SDK. Deployed on Base Sepolia.
 
-CONTRACT: [TODO: https://sepolia.basescan.org/address/CONTRACT_ADDRESS]
+CONTRACT: https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a
 
 DEMO TXS:
-- Register agents: [TODO: Basescan tx links]
-- Set scores: [TODO: Basescan tx link]
-- List ad slot: [TODO: Basescan tx link]
-- Buy ad slot: [TODO: Basescan tx link]
-- Claim revenue: [TODO: Basescan tx link]
+- Register agent: https://sepolia.basescan.org/tx/0x558e3df83a7414445356f60c9ecf6351297da4daff7c2466f4b8815c0a6b78b4
+- Set score (750 Platinum): https://sepolia.basescan.org/tx/0xa9ef4949a488b4638b0e842b4ce5ce9e7d7163c233bf4a5c9d78aede3b7cfc12
+- List ad slot (0.10 USDC): https://sepolia.basescan.org/tx/0xeaf31f95a31f6ad9dde8c6442339a0b2ab3df876136abd1ffc5a6667e6a02225
 
-SOURCE: [TODO: https://github.com/USERNAME/clawsight]
-SKILL: [TODO: https://github.com/USERNAME/clawsight/blob/main/skill/SKILL.md]
+SOURCE: https://github.com/back2matching/clawsight
+SKILL: https://github.com/back2matching/clawsight/blob/main/skill/SKILL.md
 
 EAS:
-- Schema: [TODO: https://base-sepolia.easscan.org/schema/view/SCHEMA_UID]
-- Attestations: [TODO: easscan.org attestation links]
+- Schema: https://base-sepolia.easscan.org/schema/view/0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c
+- agent_alpha (750): https://base-sepolia.easscan.org/attestation/view/0x3b068403d2b732305bc9fa905d144327b272dfb8dc4eca378e139572bf962c35
+- agent_beta (420): https://base-sepolia.easscan.org/attestation/view/0x8b29c6ac47a2ecea522379b362822878fac1853bad5fc366bf31bf284df62f46
+- agent_gamma (920): https://base-sepolia.easscan.org/attestation/view/0xedfd18b8476fe4855d3c386cee6a401b2cb3e11862db6490827f091ca98ab5c1
 ```
 
 ---
@@ -184,7 +180,7 @@ Reputation scores range from 0 to 1000 and are computed off-chain using the form
 ### "How does the USDC ad marketplace work?"
 
 ```
-Any registered agent can list an ad slot by calling listAdSlot with a USDC price and description. A buyer calls buyAdSlot after approving the contract to spend their USDC. The contract transfers USDC from the buyer, credits 90% to the seller's on-chain balance and 10% to the protocol balance. The seller can withdraw their earnings at any time by calling claimRevenue. All transfers use OpenZeppelin SafeERC20 and follow the checks-effects-interactions pattern.
+Any registered agent can list an ad slot by calling listAdSlot with a USDC price and description. A buyer calls buyAdSlot after approving the contract to spend their USDC. The contract transfers USDC from the buyer and credits 100% to the seller's on-chain balance. The seller can withdraw their earnings at any time by calling claimRevenue. All transfers use OpenZeppelin SafeERC20 and follow the checks-effects-interactions pattern.
 ```
 
 ### "What are the EAS attestations for?"

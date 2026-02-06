@@ -11,6 +11,8 @@ const { ethers } = hre;
 const BASESCAN = "https://sepolia.basescan.org";
 const USDC_ADDRESS = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 
+const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
 // Update this after deploying, or set CONTRACT_ADDRESS env var
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS || "0xYOUR_CONTRACT_ADDRESS_HERE";
 
@@ -69,6 +71,8 @@ async function main() {
     const receipt = await tx.wait();
     logTx("setScore(deployer, 750) — Platinum tier", receipt);
   }
+
+  await delay(5000); // Wait for nonce to settle on RPC
 
   // Verify score
   const score = await contract.getScore(deployer.address);

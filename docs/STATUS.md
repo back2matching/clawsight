@@ -7,21 +7,52 @@
 
 ## Where We Are
 
-**Phase 1 (Code) -- COMPLETE. Phase 2 (Deploy + Submit) -- NEXT.**
+**Phases 1-3 COMPLETE. Phase 4 (Submit) -- NEXT.**
 
 ```
 Phase 1: Code          [##########] 100%  DONE
-Phase 2: Deploy        [          ]   0%  NEXT <-- YOU ARE HERE
-Phase 3: EAS           [          ]   0%  After deploy
-Phase 4: Submit        [          ]   0%  After EAS
+Phase 2: Deploy        [##########] 100%  DONE
+Phase 3: EAS           [##########] 100%  DONE
+Phase 4: Submit        [          ]   0%  NEXT <-- YOU ARE HERE
 Phase 5: Vote + Polish [          ]   0%  After submit
 ```
 
 ---
 
-## Phase 1: Code (COMPLETE)
+## Deployed Addresses
 
-Everything is written, compiled, and tested.
+| What | Address / Link |
+|------|----------------|
+| Contract | `0x497cA2E521887d250730EAeD777A3998CC74e21a` |
+| Basescan | https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a |
+| Deployer/Oracle | `0xc91dDCEfBd6e3C9527c9c7baF126C8fBD9Eb13d1` |
+| EAS Schema | `0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c` |
+| EAS Schema URL | https://base-sepolia.easscan.org/schema/view/0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c |
+| GitHub | https://github.com/back2matching/clawsight |
+
+---
+
+## Demo Transaction Hashes
+
+| TX | Hash | Link |
+|----|------|------|
+| Register agent_alpha | `0x558e3df8...` | https://sepolia.basescan.org/tx/0x558e3df83a7414445356f60c9ecf6351297da4daff7c2466f4b8815c0a6b78b4 |
+| Set score 750 (Platinum) | `0xa9ef4949...` | https://sepolia.basescan.org/tx/0xa9ef4949a488b4638b0e842b4ce5ce9e7d7163c233bf4a5c9d78aede3b7cfc12 |
+| List ad slot (0.10 USDC) | `0xeaf31f95...` | https://sepolia.basescan.org/tx/0xeaf31f95a31f6ad9dde8c6442339a0b2ab3df876136abd1ffc5a6667e6a02225 |
+
+---
+
+## EAS Attestations
+
+| Agent | Score | Attestation |
+|-------|-------|-------------|
+| agent_alpha | 750 (Platinum) | https://base-sepolia.easscan.org/attestation/view/0x3b068403d2b732305bc9fa905d144327b272dfb8dc4eca378e139572bf962c35 |
+| agent_beta | 420 (Gold) | https://base-sepolia.easscan.org/attestation/view/0x8b29c6ac47a2ecea522379b362822878fac1853bad5fc366bf31bf284df62f46 |
+| agent_gamma | 920 (Diamond) | https://base-sepolia.easscan.org/attestation/view/0xedfd18b8476fe4855d3c386cee6a401b2cb3e11862db6490827f091ca98ab5c1 |
+
+---
+
+## Phase 1: Code (COMPLETE)
 
 | File | Status | Details |
 |------|--------|---------|
@@ -31,9 +62,9 @@ Everything is written, compiled, and tested.
 | `scripts/deploy.js` | DONE | Deploy + Basescan verification |
 | `scripts/demo.js` | DONE | Register agent, set score, list ad, query |
 | `scripts/eas.js` | DONE | Schema registration + 3 attestations |
-| `skill/SKILL.md` | DONE | 10 /clawsight commands defined |
+| `skill/SKILL.md` | DONE | 10 /clawsight commands, contract address filled in |
 | `hardhat.config.js` | DONE | Base Sepolia + Basescan configured |
-| `package.json` | DONE | All deps installed (node_modules exists) |
+| `package.json` | DONE | All deps installed |
 | `.env.example` | DONE | Template for keys |
 
 ### Test Results
@@ -51,52 +82,28 @@ Clawsight
 
 ---
 
-## Phase 2: Deploy to Base Sepolia (NEXT)
+## Phase 2: Deploy (COMPLETE)
 
-**Prerequisites:**
-- [ ] `.env` file has `DEPLOYER_PRIVATE_KEY` (wallet with Base Sepolia ETH)
-- [ ] `.env` file has `BASESCAN_API_KEY` (for contract verification)
-- [ ] Wallet has Base Sepolia ETH (get from https://www.alchemy.com/faucets/base-sepolia)
-- [ ] Wallet has Base Sepolia USDC (get from https://faucet.circle.com)
-
-**Commands:**
-```bash
-# 1. Deploy contract
-npx hardhat run scripts/deploy.js --network base-sepolia
-
-# 2. Note the contract address from output
-# 3. Run demo transactions
-CONTRACT_ADDRESS=0x... npx hardhat run scripts/demo.js --network base-sepolia
-```
-
-**What you get:**
-- Contract address on Basescan
-- Verified source code on Basescan
-- Demo tx hashes (register, score, list ad)
+- [x] Contract deployed: `0x497cA2E521887d250730EAeD777A3998CC74e21a`
+- [ ] Basescan verification (needs API key -- not required for submission)
+- [x] Demo txs: register, setScore, listAdSlot all confirmed
 
 ---
 
-## Phase 3: EAS Attestations
+## Phase 3: EAS (COMPLETE)
 
-**After deploying, run:**
-```bash
-node scripts/eas.js
-```
-
-**What you get:**
-- Schema UID registered on Base Sepolia EAS
-- 3 attestation UIDs for demo agents
-- Links to base-sepolia.easscan.org
+- [x] Schema registered: `0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c`
+- [x] 3 attestations created (agent_alpha, agent_beta, agent_gamma)
+- [x] All links verified on easscan.org
 
 ---
 
-## Phase 4: Submit on Moltbook
+## Phase 4: Submit on Moltbook (NEXT)
 
-**After EAS, do:**
-- [ ] Push code to GitHub (new public repo)
-- [ ] Fill in contract address in `skill/SKILL.md`
-- [ ] Post submission on Moltbook m/usdc (pre-written in `hackathon/SUBMISSIONS.md`)
-- [ ] Fill in all [TODO] links with actual Basescan/EAS/GitHub URLs
+- [x] Push code to GitHub
+- [x] Contract address filled in `skill/SKILL.md`
+- [ ] Post submission on Moltbook m/usdc
+- [ ] Fill in all links in submission post (ready in SUBMISSIONS.md)
 
 ---
 
@@ -106,41 +113,6 @@ node scripts/eas.js
 - [ ] Vote on 5 more (Day 3, target 10+)
 - [ ] Respond to comments on submission
 - [ ] Verify all links work before noon PST deadline
-
----
-
-## File Map
-
-```
-clawsight/
-├── contracts/
-│   ├── Clawsight.sol              # Main contract (DONE)
-│   └── test/MockERC20.sol         # Mock USDC (DONE)
-├── test/
-│   └── Clawsight.test.js          # 71 tests (DONE)
-├── scripts/
-│   ├── deploy.js                  # Deploy + verify (DONE, not yet run)
-│   ├── demo.js                    # Demo txs (DONE, not yet run)
-│   └── eas.js                     # EAS attestations (DONE, not yet run)
-├── skill/
-│   └── SKILL.md                   # OpenClaw skill (DONE, needs contract addr)
-├── hackathon/
-│   ├── README.md                  # Project overview + brand guide
-│   ├── PRD.md                     # Product requirements (10 stories, 18 reqs)
-│   ├── ARCHITECTURE.md            # System design + data flows
-│   ├── SMART_CONTRACT.md          # Full Solidity spec (911 lines)
-│   ├── ECONOMICS.md               # Scoring formula + revenue model
-│   ├── SKILL_SPEC.md              # Skill specification
-│   ├── SUBMISSIONS.md             # Pre-written Moltbook posts + templates
-│   └── BUILD_PLAN.md              # Original build plan (Day 1 items done)
-├── CLAUDE.md                      # Project spec for AI assistants
-├── README.md                      # Public-facing readme
-├── STATUS.md                      # THIS FILE
-├── hardhat.config.js              # Base Sepolia config
-├── package.json                   # Dependencies
-├── .env.example                   # Key template
-└── .gitignore                     # Hardhat project ignores
-```
 
 ---
 
@@ -157,42 +129,3 @@ clawsight/
 **Security:** CEI pattern, ReentrancyGuard, SafeERC20, Pausable, input validation
 **Network:** Base Sepolia (Chain ID 84532)
 **USDC:** 0x036CbD53842c5426634e7929541eC2318f3dCF7e (6 decimals)
-
----
-
-## Key Decisions Made
-
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Protocol fee | None (100% to seller) | Simpler, encourages adoption, can add later |
-| Oracle | Deployer wallet | Single key for hackathon, real oracle is out of scope |
-| Frontend | None | Smart contract track, not needed for submission |
-| Upgradability | None | Not needed for hackathon, reduces complexity |
-| Score computation | Off-chain | Keep contract simple, oracle pushes results |
-| Git history | Fresh init | Repo was forked from Snakey, re-initialized clean |
-
----
-
-## Risk Register
-
-| Risk | Impact | Mitigation | Status |
-|------|--------|------------|--------|
-| Contract bugs | High | 71 tests passing, security audit clean | Mitigated |
-| Deploy failure | Medium | Script handles errors, can retry | Ready |
-| Basescan verify fails | Low | Not required for submission | Acceptable |
-| EAS SDK issues | Low | Attestations are bonus, not required | Acceptable |
-| RPC rate limits | Low | Delays built into EAS script | Mitigated |
-| Insufficient testnet ETH | Medium | Get from Alchemy faucet before deploy | Action needed |
-| Insufficient testnet USDC | Medium | Get from Circle faucet before demo | Action needed |
-| Time pressure | Medium | All code done, just deploy + submit left | Mitigated |
-
----
-
-## Minimum Viable Submission (if everything goes wrong)
-
-1. Deploy contract (1 command)
-2. Register 1 agent (1 tx)
-3. Post Basescan link on Moltbook
-4. Vote on 5 projects
-
-**That's it. Everything else is bonus.**

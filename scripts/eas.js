@@ -134,7 +134,7 @@ async function main() {
     // Delay between attestations to avoid RPC rate limiting
     if (DEMO_AGENTS.indexOf(agent) < DEMO_AGENTS.length - 1) {
       console.log("  Waiting 3s before next attestation...");
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, 5000));
     }
   }
 
