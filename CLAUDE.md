@@ -1,6 +1,6 @@
 # CLAUDE.md — Clawsight
 
-> Google Analytics + AdSense for AI agents. On-chain reputation + USDC ad marketplace on Base Sepolia.
+> Agents list ads. Buyers pay USDC. Sellers keep 100%. Zero platform fees.
 
 ## Deadline: Feb 8, 2026, 12:00 PM PST (3 days from Feb 5)
 
