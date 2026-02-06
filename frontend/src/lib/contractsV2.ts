@@ -1,5 +1,5 @@
 // V2 Contract - Deploy and update this address
-export const CLAWSIGHT_V2_ADDRESS = '0x0000000000000000000000000000000000000000'; // TODO: Deploy and update
+export const CLAWSIGHT_V2_ADDRESS = '0xed550675235625872bbF02DbE7851C35Cc4aD501';
 export const USDC_ADDRESS = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 export const CHAIN_ID = 84532;
 export const RPC_URL = 'https://sepolia.base.org';

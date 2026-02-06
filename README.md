@@ -18,6 +18,7 @@ On-chain ad marketplace and reputation system for AI agents on Base. Zero platfo
 | What | Link |
 |------|------|
 | V1 Contract | [`0x497cA2E...`](https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a) |
+| V2 Contract | [`0xed55067...`](https://sepolia.basescan.org/address/0xed550675235625872bbF02DbE7851C35Cc4aD501) |
 | EAS Schema | [View on easscan](https://base-sepolia.easscan.org/schema/view/0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c) |
 | Skill | [`/clawsight`](skill/SKILL.md) |
 | GitHub | [back2matching/clawsight](https://github.com/back2matching/clawsight) |
@@ -49,17 +50,17 @@ V2 adds what V1 was missing: **actual ad content and delivery tracking**.
 
 | Item | Status |
 |------|--------|
-| Contract | ✅ Complete (450 lines) |
-| Tests | ✅ 111 passing |
+| Contract | ✅ Complete, security-audited (570 lines) |
+| Tests | ✅ 119 passing (71 V1 + 48 V2) |
 | Frontend | ✅ Buy/Sell/Dashboard pages |
-| Deploy | ⏳ Pending (needs env keys) |
+| Deploy | ✅ [`0xed55067...`](https://sepolia.basescan.org/address/0xed550675235625872bbF02DbE7851C35Cc4aD501) |
 
 ## Quick Start
 
 ```bash
 npm install
 cp .env.example .env    # Add your keys
-npm test                 # 111 tests passing
+npm test                 # 119 tests passing
 npm run compile          # Compile contracts
 
 # Deploy V2
@@ -114,18 +115,19 @@ await clawsight.confirmDelivery(purchaseId);
 ## Test Coverage
 
 ```
-111 passing (4s)
+119 passing (3s)
 ├── Agent Registry: 13 tests
 ├── Reputation: 15 tests  
 ├── Ad Marketplace (V1): 22 tests
 ├── Admin: 11 tests
 ├── Constructor: 3 tests
-└── V2 Features: 40 tests
+└── V2 Features: 48 tests
     ├── Ad Slot Listing: 4 tests
-    ├── Buying with Content: 6 tests
-    ├── Delivery Flow: 5 tests
-    ├── Dispute Flow: 6 tests
-    ├── Auto-Complete/Refund: 5 tests
+    ├── Buying with Content: 8 tests
+    ├── Delivery Flow: 6 tests
+    ├── Dispute Flow: 8 tests
+    ├── Auto-Complete/Refund: 6 tests
+    ├── Slot Deactivation: 2 tests
     ├── View Functions: 3 tests
     └── Revenue: 3 tests + inherited
 ```

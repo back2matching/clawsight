@@ -227,12 +227,14 @@ event OracleUpdated(address indexed oldOracle, address indexed newOracle);
 
 ---
 
-## Deployed Contract
+## Deployed Contracts
 
 | What | Value |
 |------|-------|
-| Contract | `0x497cA2E521887d250730EAeD777A3998CC74e21a` |
-| Basescan | `https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a` |
+| V1 Contract | `0x497cA2E521887d250730EAeD777A3998CC74e21a` |
+| V1 Basescan | `https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a` |
+| V2 Contract | `0xed550675235625872bbF02DbE7851C35Cc4aD501` |
+| V2 Basescan | `https://sepolia.basescan.org/address/0xed550675235625872bbF02DbE7851C35Cc4aD501` |
 | EAS Schema | `0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c` |
 | GitHub | `https://github.com/back2matching/clawsight` |
 

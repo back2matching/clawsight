@@ -7,13 +7,13 @@
 
 ## Where We Are
 
-**Phases 1-3 COMPLETE. Phase 4 (Submit) -- NEXT.**
+**Phases 1-3 COMPLETE. V2 DEPLOYED. Phase 4 (Submit) -- NEXT.**
 
 ```
 Phase 1: Code          [##########] 100%  DONE
-Phase 2: Deploy        [##########] 100%  DONE
+Phase 2: Deploy        [##########] 100%  DONE (V1 + V2)
 Phase 3: EAS           [##########] 100%  DONE
-Phase 4: Submit        [          ]   0%  NEXT <-- YOU ARE HERE
+Phase 4: Submit        [###       ]  30%  IN PROGRESS <-- YOU ARE HERE
 Phase 5: Vote + Polish [          ]   0%  After submit
 ```
 
@@ -23,8 +23,10 @@ Phase 5: Vote + Polish [          ]   0%  After submit
 
 | What | Address / Link |
 |------|----------------|
-| Contract | `0x497cA2E521887d250730EAeD777A3998CC74e21a` |
-| Basescan | https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a |
+| V1 Contract | `0x497cA2E521887d250730EAeD777A3998CC74e21a` |
+| V1 Basescan | https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a |
+| V2 Contract | `0xed550675235625872bbF02DbE7851C35Cc4aD501` |
+| V2 Basescan | https://sepolia.basescan.org/address/0xed550675235625872bbF02DbE7851C35Cc4aD501 |
 | Deployer/Oracle | `0xc91dDCEfBd6e3C9527c9c7baF126C8fBD9Eb13d1` |
 | EAS Schema | `0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c` |
 | EAS Schema URL | https://base-sepolia.easscan.org/schema/view/0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c |
@@ -32,13 +34,17 @@ Phase 5: Vote + Polish [          ]   0%  After submit
 
 ---
 
-## Demo Transaction Hashes
+## Demo Transaction Hashes (V1)
 
 | TX | Hash | Link |
 |----|------|------|
 | Register agent_alpha | `0x558e3df8...` | https://sepolia.basescan.org/tx/0x558e3df83a7414445356f60c9ecf6351297da4daff7c2466f4b8815c0a6b78b4 |
 | Set score 750 (Platinum) | `0xa9ef4949...` | https://sepolia.basescan.org/tx/0xa9ef4949a488b4638b0e842b4ce5ce9e7d7163c233bf4a5c9d78aede3b7cfc12 |
 | List ad slot (0.10 USDC) | `0xeaf31f95...` | https://sepolia.basescan.org/tx/0xeaf31f95a31f6ad9dde8c6442339a0b2ab3df876136abd1ffc5a6667e6a02225 |
+
+## Demo Transaction Hashes (V2)
+
+**Pending** -- Server agent will run demo txs after pulling latest.
 
 ---
 
@@ -54,39 +60,67 @@ Phase 5: Vote + Polish [          ]   0%  After submit
 
 ## Phase 1: Code (COMPLETE)
 
+### V1 Contract
+
 | File | Status | Details |
 |------|--------|---------|
 | `contracts/Clawsight.sol` | DONE | 290 lines, all modules implemented |
 | `contracts/test/MockERC20.sol` | DONE | Mock USDC with mint + configurable decimals |
-| `test/Clawsight.test.js` | DONE | **71/71 tests passing** (3 seconds) |
+| `test/Clawsight.test.js` | DONE | **71/71 tests passing** |
 | `scripts/deploy.js` | DONE | Deploy + Basescan verification |
 | `scripts/demo.js` | DONE | Register agent, set score, list ad, query |
 | `scripts/eas.js` | DONE | Schema registration + 3 attestations |
 | `skill/SKILL.md` | DONE | 10 /clawsight commands, contract address filled in |
-| `hardhat.config.js` | DONE | Base Sepolia + Basescan configured |
-| `package.json` | DONE | All deps installed |
-| `.env.example` | DONE | Template for keys |
+
+### V2 Contract
+
+| File | Status | Details |
+|------|--------|---------|
+| `contracts/ClawsightV2.sol` | DONE | 570 lines, security-audited, all fixes applied |
+| `test/ClawsightV2.test.js` | DONE | **48/48 tests passing** |
+| `scripts/deployV2.js` | DONE | Deploy to Base Sepolia |
+| `frontend/src/lib/contractsV2.ts` | DONE | ABI + deployed address |
+
+### V2 Security Audit (Applied)
+
+| Issue | Severity | Fix |
+|-------|----------|-----|
+| Slots not deactivated after purchase | CRITICAL | `slot.active = false` after buy |
+| Dispute window from purchasedAt | HIGH | Uses `deliveredAt + DISPUTE_WINDOW` now |
+| Missing deliveredAt timestamp | HIGH | Added to Purchase struct |
+| No purchaseId in struct | MEDIUM | Added `id` field |
+| Missing bounds checks | MEDIUM | `require(purchaseId < nextPurchaseId)` |
+| No nonReentrant on oracle funcs | MEDIUM | Added to resolveDisputeForBuyer/Seller |
+
+### Frontend (SvelteKit)
+
+| Page | Status | Description |
+|------|--------|-------------|
+| `/` | DONE | Dashboard with agent stats, top agents, EAS info |
+| `/marketplace-v2` | DONE | Browse and buy ad slots with content submission |
+| `/sell` | DONE | Create ad slot listings |
+| `/dashboard` | DONE | Track purchases, deliveries, disputes, revenue |
+| `/agents` | DONE | Agent registry with tier badges |
+| `/leaderboard` | DONE | Ranked leaderboard with score bars |
+| `/agent/[address]` | DONE | Individual agent profile |
 
 ### Test Results
 
 ```
-Clawsight
-  Agent Registry .............. 13 passing
-  Reputation .................. 15 passing
-  Ad Marketplace .............. 22 passing
-  Admin ....................... 11 passing
-  Constructor .................  3 passing
-
-71 passing (3s)
+V1: 71 passing
+V2: 48 passing
+Total: 119 passing (3s)
 ```
 
 ---
 
 ## Phase 2: Deploy (COMPLETE)
 
-- [x] Contract deployed: `0x497cA2E521887d250730EAeD777A3998CC74e21a`
+- [x] V1 deployed: `0x497cA2E521887d250730EAeD777A3998CC74e21a`
+- [x] V2 deployed: `0xed550675235625872bbF02DbE7851C35Cc4aD501`
 - [ ] Basescan verification (needs API key -- not required for submission)
-- [x] Demo txs: register, setScore, listAdSlot all confirmed
+- [x] V1 demo txs: register, setScore, listAdSlot all confirmed
+- [ ] V2 demo txs: full flow (register, list, buy, deliver, confirm, claim)
 
 ---
 
@@ -98,10 +132,12 @@ Clawsight
 
 ---
 
-## Phase 4: Submit on Moltbook (NEXT)
+## Phase 4: Submit on Moltbook (IN PROGRESS)
 
 - [x] Push code to GitHub
 - [x] Contract address filled in `skill/SKILL.md`
+- [x] V2 deployed and frontend address updated
+- [ ] Run V2 demo transactions (server agent)
 - [ ] Post submission on Moltbook m/usdc
 - [ ] Fill in all links in submission post (ready in SUBMISSIONS.md)
 
@@ -118,14 +154,25 @@ Clawsight
 
 ## Contract Summary
 
-| Feature | Status | Functions |
-|---------|--------|-----------|
-| Agent Registry | DONE | registerAgent, getAgent, isRegistered, getAgentCount |
-| Reputation | DONE | setScore, batchSetScores, getScore, getTopAgents |
-| Ad Marketplace | DONE | listAdSlot, buyAdSlot, cancelAdSlot, claimRevenue, getAdSlot, getActiveSlots, getBalance |
-| Admin | DONE | setOracle, pause, unpause |
+### V1 (Clawsight.sol)
+| Feature | Functions |
+|---------|-----------|
+| Agent Registry | registerAgent, getAgent, isRegistered, getAgentCount |
+| Reputation | setScore, batchSetScores, getScore, getTopAgents |
+| Ad Marketplace | listAdSlot, buyAdSlot, cancelAdSlot, claimRevenue, getAdSlot, getActiveSlots, getBalance |
+| Admin | setOracle, pause, unpause |
+
+### V2 (ClawsightV2.sol) -- adds escrow + delivery
+| Feature | Functions |
+|---------|-----------|
+| All V1 features | Same as above |
+| Ad Content | buyAdSlot(slotId, imageUrl, clickUrl, text) |
+| Delivery | markDelivered, confirmDelivery |
+| Disputes | disputeDelivery, resolveDisputeForBuyer, resolveDisputeForSeller |
+| Auto-Resolution | autoComplete, autoRefund |
+| Escrow | getEscrow, getPurchase, getPurchasesByBuyer, getPurchasesBySeller |
 
 **Revenue model:** 100% to seller, no platform fee
-**Security:** CEI pattern, ReentrancyGuard, SafeERC20, Pausable, input validation
+**Security:** CEI pattern, ReentrancyGuard, SafeERC20, Pausable, input validation, bounds checks
 **Network:** Base Sepolia (Chain ID 84532)
 **USDC:** 0x036CbD53842c5426634e7929541eC2318f3dCF7e (6 decimals)
