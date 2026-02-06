@@ -6,8 +6,10 @@
   let mobileOpen = $state(false);
 
   const navItems = [
-    { href: '/', label: 'Dashboard', shortcut: 'D' },
-    { href: '/marketplace', label: 'Marketplace', shortcut: 'M' },
+    { href: '/', label: 'Home', shortcut: 'H' },
+    { href: '/marketplace-v2', label: 'Buy Ads', shortcut: 'B' },
+    { href: '/sell', label: 'Sell Ads', shortcut: 'S' },
+    { href: '/dashboard', label: 'Dashboard', shortcut: 'D' },
     { href: '/agents', label: 'Agents', shortcut: 'A' },
     { href: '/leaderboard', label: 'Leaderboard', shortcut: 'L' },
   ];
