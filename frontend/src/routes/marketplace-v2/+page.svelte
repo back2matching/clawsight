@@ -226,9 +226,9 @@
 <!-- Buy Modal -->
 {#if showBuyModal && selectedSlot}
   <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-  <div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-label="Buy ad slot" onclick={closeBuyModal}>
+  <div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" role="dialog" tabindex="-1" aria-modal="true" aria-label="Buy ad slot" onclick={closeBuyModal}>
     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-    <div class="bg-abyss-900 border border-abyss-700 rounded-xl max-w-lg w-full p-6" onclick={(e) => e.stopPropagation()}>
+    <div class="bg-abyss-900 border border-abyss-700 rounded-xl max-w-lg w-full p-6" role="document" onclick={(e) => e.stopPropagation()}>
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-lg font-semibold text-abyss-50">Buy Ad Slot</h2>
         <button onclick={closeBuyModal} class="text-abyss-400 hover:text-abyss-200 cursor-pointer" aria-label="Close modal">
