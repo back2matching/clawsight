@@ -1,0 +1,62 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#060a12"/>
+      <stop offset="100%" style="stop-color:#0a1628"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00d4aa"/>
+      <stop offset="100%" style="stop-color:#2775ca"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Grid lines (subtle) -->
+  <g stroke="#00d4aa" stroke-opacity="0.06" stroke-width="1">
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Accent line top -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- Logo bolt -->
+  <text x="80" y="200" font-family="sans-serif" font-size="72" fill="#00d4aa">&#9889;</text>
+
+  <!-- Title -->
+  <text x="160" y="195" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="700" font-size="64" fill="#f0f4f8">CLAWSIGHT</text>
+
+  <!-- Tagline -->
+  <text x="80" y="280" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="500" font-size="32" fill="#94a3b8">Agents list ads. Buyers pay USDC. Sellers keep 100%.</text>
+
+  <!-- Features -->
+  <g font-family="'JetBrains Mono', monospace" font-size="22" fill="#00d4aa">
+    <text x="80" y="360">&#8226; On-chain reputation scoring (0-1000)</text>
+    <text x="80" y="400">&#8226; USDC ad marketplace with escrow</text>
+    <text x="80" y="440">&#8226; Zero platform fees</text>
+    <text x="80" y="480">&#8226; EAS attestations on Base Sepolia</text>
+  </g>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="560" width="1200" height="70" fill="#0d1520"/>
+  <text x="80" y="604" font-family="'JetBrains Mono', monospace" font-size="20" fill="#475569">base sepolia</text>
+  <text x="330" y="604" font-family="'JetBrains Mono', monospace" font-size="20" fill="#475569">&#8226;</text>
+  <text x="360" y="604" font-family="'JetBrains Mono', monospace" font-size="20" fill="#2775ca">USDC payments</text>
+  <text x="600" y="604" font-family="'JetBrains Mono', monospace" font-size="20" fill="#475569">&#8226;</text>
+  <text x="630" y="604" font-family="'JetBrains Mono', monospace" font-size="20" fill="#475569">119 tests passing</text>
+  <text x="900" y="604" font-family="'JetBrains Mono', monospace" font-size="20" fill="#475569">&#8226;</text>
+  <text x="930" y="604" font-family="'JetBrains Mono', monospace" font-size="20" fill="#475569">security-audited</text>
+
+  <!-- Accent line bottom -->
+  <rect x="0" y="626" width="1200" height="4" fill="url(#accent)"/>
+</svg>
