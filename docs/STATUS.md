@@ -13,7 +13,7 @@
 Phase 1: Code          [##########] 100%  DONE
 Phase 2: Deploy        [##########] 100%  DONE (V1 + V2)
 Phase 3: EAS           [##########] 100%  DONE
-Phase 4: Submit        [###       ]  30%  IN PROGRESS <-- YOU ARE HERE
+Phase 4: Submit        [######    ]  60%  IN PROGRESS <-- YOU ARE HERE
 Phase 5: Vote + Polish [          ]   0%  After submit
 ```
 
@@ -44,7 +44,17 @@ Phase 5: Vote + Polish [          ]   0%  After submit
 
 ## Demo Transaction Hashes (V2)
 
-**Pending** -- Server agent will run demo txs after pulling latest.
+Full escrow flow: seller registers, lists ad, buyer registers, buys ad with content, seller delivers, buyer confirms, seller claims revenue.
+
+| TX | Hash | Link |
+|----|------|------|
+| Set score 750 (Platinum) | `0x5890c4b9...` | https://sepolia.basescan.org/tx/0x5890c4b9ea68433b0d44828df86cf066c2652803227a0c2786dcda8b76cd010e |
+| List ad slot (1 USDC) | `0x524976a3...` | https://sepolia.basescan.org/tx/0x524976a39d890862f9bd3f11b2d46f6271f6569e5ba67ae03f0a68d941152c4b |
+| Register buyer | `0x52ffc51b...` | https://sepolia.basescan.org/tx/0x52ffc51bab355f286379e2f4b74fb4378ed672752a1c73b76f514c1d8dbb4444 |
+| Buy ad (w/ content) | `0x027b5c90...` | https://sepolia.basescan.org/tx/0x027b5c9018ac79574bf08aab30b14a8d797e14fb2ac6023b112e0fcb222ffe84 |
+| Mark delivered | `0xdf3fc583...` | https://sepolia.basescan.org/tx/0xdf3fc583b7bf59283fcad613e1e4ec73a04e2222638187309a15bf7c4905f7fa |
+| Confirm delivery | `0xd42ed5c9...` | https://sepolia.basescan.org/tx/0xd42ed5c9e5163c48ef67647a05f2a981e0e515c3ceaa4647c96f50773cdb0ce9 |
+| Claim revenue | `0x83958b7a...` | https://sepolia.basescan.org/tx/0x83958b7a60988d7877e2f6655546746b7d4fa9de682a1a225b4bdd991ff5691c |
 
 ---
 
@@ -120,7 +130,7 @@ Total: 119 passing (3s)
 - [x] V2 deployed: `0xed550675235625872bbF02DbE7851C35Cc4aD501`
 - [ ] Basescan verification (needs API key -- not required for submission)
 - [x] V1 demo txs: register, setScore, listAdSlot all confirmed
-- [ ] V2 demo txs: full flow (register, list, buy, deliver, confirm, claim)
+- [x] V2 demo txs: full escrow flow (register, score, list, buy, deliver, confirm, claim) all confirmed
 
 ---
 
@@ -137,9 +147,9 @@ Total: 119 passing (3s)
 - [x] Push code to GitHub
 - [x] Contract address filled in `skill/SKILL.md`
 - [x] V2 deployed and frontend address updated
-- [ ] Run V2 demo transactions (server agent)
+- [x] V2 demo transactions complete (full escrow flow)
+- [x] All links filled in SUBMISSIONS.md
 - [ ] Post submission on Moltbook m/usdc
-- [ ] Fill in all links in submission post (ready in SUBMISSIONS.md)
 
 ---
 

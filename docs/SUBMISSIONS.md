@@ -18,12 +18,12 @@ Complete every item before posting the submission on Moltbook.
 
 ### Demo Transactions
 
-- [ ] Register at least 3 agents (`registerAgent`)
-- [ ] Set reputation scores for registered agents (`setScore` / `batchSetScores`)
-- [ ] List at least 1 ad slot (`listAdSlot`)
-- [ ] Buy at least 1 ad slot with USDC (`buyAdSlot`)
-- [ ] Claim revenue from sold ad slot (`claimRevenue`)
-- [ ] Collect all tx hashes and Basescan links
+- [x] Register at least 3 agents (`registerAgent`) — V1: agent_alpha; V2: seller + buyer
+- [x] Set reputation scores for registered agents (`setScore` / `batchSetScores`)
+- [x] List at least 1 ad slot (`listAdSlot`)
+- [x] Buy at least 1 ad slot with USDC (`buyAdSlot`) — V2 full escrow flow
+- [x] Claim revenue from sold ad slot (`claimRevenue`)
+- [x] Collect all tx hashes and Basescan links
 
 ### EAS (Ethereum Attestation Service)
 
@@ -46,6 +46,12 @@ V2 CONTRACT:   https://sepolia.basescan.org/address/0xed550675235625872bbF02DbE7
 TX (register): https://sepolia.basescan.org/tx/0x558e3df83a7414445356f60c9ecf6351297da4daff7c2466f4b8815c0a6b78b4
 TX (score):    https://sepolia.basescan.org/tx/0xa9ef4949a488b4638b0e842b4ce5ce9e7d7163c233bf4a5c9d78aede3b7cfc12
 TX (list ad):  https://sepolia.basescan.org/tx/0xeaf31f95a31f6ad9dde8c6442339a0b2ab3df876136abd1ffc5a6667e6a02225
+V2 TX (score):    https://sepolia.basescan.org/tx/0x5890c4b9ea68433b0d44828df86cf066c2652803227a0c2786dcda8b76cd010e
+V2 TX (list ad):  https://sepolia.basescan.org/tx/0x524976a39d890862f9bd3f11b2d46f6271f6569e5ba67ae03f0a68d941152c4b
+V2 TX (buy ad):   https://sepolia.basescan.org/tx/0x027b5c9018ac79574bf08aab30b14a8d797e14fb2ac6023b112e0fcb222ffe84
+V2 TX (deliver):  https://sepolia.basescan.org/tx/0xdf3fc583b7bf59283fcad613e1e4ec73a04e2222638187309a15bf7c4905f7fa
+V2 TX (confirm):  https://sepolia.basescan.org/tx/0xd42ed5c9e5163c48ef67647a05f2a981e0e515c3ceaa4647c96f50773cdb0ce9
+V2 TX (claim):    https://sepolia.basescan.org/tx/0x83958b7a60988d7877e2f6655546746b7d4fa9de682a1a225b4bdd991ff5691c
 EAS SCHEMA:    https://base-sepolia.easscan.org/schema/view/0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c
 ATTESTATION 1: https://base-sepolia.easscan.org/attestation/view/0x3b068403d2b732305bc9fa905d144327b272dfb8dc4eca378e139572bf962c35
 ATTESTATION 2: https://base-sepolia.easscan.org/attestation/view/0x8b29c6ac47a2ecea522379b362822878fac1853bad5fc366bf31bf284df62f46
@@ -93,10 +99,18 @@ LIVE ON BASE SEPOLIA — all verifiable:
 V1 CONTRACT: https://sepolia.basescan.org/address/0x497cA2E521887d250730EAeD777A3998CC74e21a
 V2 CONTRACT: https://sepolia.basescan.org/address/0xed550675235625872bbF02DbE7851C35Cc4aD501
 
-DEMO TXS:
+DEMO TXS (V1):
 - Register: https://sepolia.basescan.org/tx/0x558e3df83a7414445356f60c9ecf6351297da4daff7c2466f4b8815c0a6b78b4
 - Score 750: https://sepolia.basescan.org/tx/0xa9ef4949a488b4638b0e842b4ce5ce9e7d7163c233bf4a5c9d78aede3b7cfc12
 - List ad: https://sepolia.basescan.org/tx/0xeaf31f95a31f6ad9dde8c6442339a0b2ab3df876136abd1ffc5a6667e6a02225
+
+DEMO TXS (V2 — full escrow flow):
+- Score 750: https://sepolia.basescan.org/tx/0x5890c4b9ea68433b0d44828df86cf066c2652803227a0c2786dcda8b76cd010e
+- List ad slot: https://sepolia.basescan.org/tx/0x524976a39d890862f9bd3f11b2d46f6271f6569e5ba67ae03f0a68d941152c4b
+- Buy ad (w/ content): https://sepolia.basescan.org/tx/0x027b5c9018ac79574bf08aab30b14a8d797e14fb2ac6023b112e0fcb222ffe84
+- Mark delivered: https://sepolia.basescan.org/tx/0xdf3fc583b7bf59283fcad613e1e4ec73a04e2222638187309a15bf7c4905f7fa
+- Confirm delivery: https://sepolia.basescan.org/tx/0xd42ed5c9e5163c48ef67647a05f2a981e0e515c3ceaa4647c96f50773cdb0ce9
+- Claim revenue: https://sepolia.basescan.org/tx/0x83958b7a60988d7877e2f6655546746b7d4fa9de682a1a225b4bdd991ff5691c
 
 EAS ATTESTATIONS:
 - Schema: https://base-sepolia.easscan.org/schema/view/0x56846ffe3472c0e2215fd4851fdb839eee46c123d5924936481203bbf3e5d11c
