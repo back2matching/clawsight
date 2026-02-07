@@ -7,6 +7,8 @@
 
 const hre = require("hardhat");
 
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function main() {
   const { ethers } = hre;
   const [deployer] = await ethers.getSigners();
@@ -24,6 +26,13 @@ async function main() {
     "Refunded",
     "Completed",
   ];
+
+  // Boost gas to avoid "replacement transaction underpriced" on Base Sepolia
+  const feeData = await ethers.provider.getFeeData();
+  const gasOpts = {
+    maxFeePerGas: feeData.maxFeePerGas * 3n,
+    maxPriorityFeePerGas: feeData.maxPriorityFeePerGas * 3n,
+  };
 
   // Deterministic buyer wallet — same address every run for idempotency
   const buyerKey = ethers.keccak256(
@@ -58,26 +67,31 @@ async function main() {
   console.log("-".repeat(60));
 
   const buyerEth = await ethers.provider.getBalance(buyer.address);
-  if (buyerEth < ethers.parseEther("0.0005")) {
-    const amount = ethers.parseEther("0.001");
+  if (buyerEth < ethers.parseEther("0.000005")) {
+    const amount = ethers.parseEther("0.00001");
     console.log(`Sending ${ethers.formatEther(amount)} ETH to buyer...`);
     const tx = await deployer.sendTransaction({
       to: buyer.address,
       value: amount,
+      ...gasOpts,
     });
     const receipt = await tx.wait();
     logTx("Fund buyer ETH", receipt);
   } else {
-    console.log(`Buyer has ${ethers.formatEther(buyerEth)} ETH (sufficient)`);
+    console.log(
+      `Buyer has ${ethers.formatEther(buyerEth)} ETH (sufficient)`
+    );
     console.log();
   }
+
+  await wait(3000);
 
   const adPrice = ethers.parseUnits("0.10", 6);
   const buyerUsdc = await usdc.balanceOf(buyer.address);
   if (buyerUsdc < adPrice) {
     const amount = ethers.parseUnits("0.20", 6);
     console.log(`Sending ${ethers.formatUnits(amount, 6)} USDC to buyer...`);
-    const tx = await usdc.transfer(buyer.address, amount);
+    const tx = await usdc.transfer(buyer.address, amount, gasOpts);
     const receipt = await tx.wait();
     logTx("Fund buyer USDC", receipt);
   } else {
@@ -86,6 +100,8 @@ async function main() {
     );
     console.log();
   }
+
+  await wait(3000);
 
   // -------------------------------------------------------
   // 1. Register agents
@@ -99,20 +115,26 @@ async function main() {
     console.log(`Seller already registered: "${a.moltbookHandle}"`);
     console.log();
   } else {
-    const tx = await contract.registerAgent("seller_alpha");
+    const tx = await contract.registerAgent("seller_alpha", gasOpts);
     const receipt = await tx.wait();
     logTx('registerAgent("seller_alpha")', receipt);
   }
+
+  await wait(3000);
 
   if (await contract.isRegistered(buyer.address)) {
     const a = await contract.getAgent(buyer.address);
     console.log(`Buyer already registered: "${a.moltbookHandle}"`);
     console.log();
   } else {
-    const tx = await contract.connect(buyer).registerAgent("buyer_beta");
+    const tx = await contract
+      .connect(buyer)
+      .registerAgent("buyer_beta", gasOpts);
     const receipt = await tx.wait();
     logTx('registerAgent("buyer_beta")', receipt);
   }
+
+  await wait(3000);
 
   // -------------------------------------------------------
   // 2. Set reputation scores
@@ -124,7 +146,8 @@ async function main() {
   {
     const tx = await contract.batchSetScores(
       [deployer.address, buyer.address],
-      [750, 420]
+      [750, 420],
+      gasOpts
     );
     const receipt = await tx.wait();
     logTx("batchSetScores([seller=750, buyer=420])", receipt);
@@ -135,6 +158,8 @@ async function main() {
   console.log(`  Seller: ${sellerScore} (${tier(Number(sellerScore))})`);
   console.log(`  Buyer:  ${buyerScore} (${tier(Number(buyerScore))})`);
   console.log();
+
+  await wait(3000);
 
   // -------------------------------------------------------
   // 3. Seller lists ad slot
@@ -149,12 +174,12 @@ async function main() {
       adPrice,
       "Featured in my Moltbook feed for 7 days — 10k+ follower reach",
       "moltbook",
-      168
+      168,
+      gasOpts
     );
     const receipt = await tx.wait();
     logTx("listAdSlot(0.10 USDC, moltbook, 168h)", receipt);
 
-    // Parse slot ID from event
     for (const log of receipt.logs) {
       try {
         const parsed = contract.interface.parseLog(log);
@@ -170,9 +195,13 @@ async function main() {
     console.log(`  Slot #${slotId}`);
     console.log(`  Placement: ${slot.placement}`);
     console.log(`  Duration:  ${slot.durationHours}h`);
-    console.log(`  Price:     ${ethers.formatUnits(slot.priceUsdc, 6)} USDC`);
+    console.log(
+      `  Price:     ${ethers.formatUnits(slot.priceUsdc, 6)} USDC`
+    );
     console.log();
   }
+
+  await wait(3000);
 
   // -------------------------------------------------------
   // 4. Buyer approves USDC
@@ -182,13 +211,17 @@ async function main() {
   console.log("-".repeat(60));
 
   {
-    const tx = await usdc.connect(buyer).approve(V2_ADDRESS, adPrice);
+    const tx = await usdc
+      .connect(buyer)
+      .approve(V2_ADDRESS, adPrice, gasOpts);
     const receipt = await tx.wait();
     logTx(
       `USDC.approve(${ethers.formatUnits(adPrice, 6)} USDC)`,
       receipt
     );
   }
+
+  await wait(3000);
 
   // -------------------------------------------------------
   // 5. Buyer purchases ad — USDC goes to escrow
@@ -203,7 +236,8 @@ async function main() {
       slotId,
       "https://clawsight.xyz/ad-banner.png",
       "https://buyerbrand.xyz",
-      "BuyerBrand: next-gen AI agent tooling"
+      "BuyerBrand: next-gen AI agent tooling",
+      gasOpts
     );
     const receipt = await tx.wait();
     logTx("buyAdSlot(slotId, imageUrl, clickUrl, text)", receipt);
@@ -222,10 +256,14 @@ async function main() {
 
     const escrowAmt = await contract.getEscrow(purchaseId);
     console.log(`  Purchase #${purchaseId}`);
-    console.log(`  Escrow: ${ethers.formatUnits(escrowAmt, 6)} USDC locked`);
+    console.log(
+      `  Escrow: ${ethers.formatUnits(escrowAmt, 6)} USDC locked`
+    );
     console.log(`  Status: ${STATUS[0]}`);
     console.log();
   }
+
+  await wait(3000);
 
   // -------------------------------------------------------
   // 6. Seller marks delivered
@@ -235,7 +273,7 @@ async function main() {
   console.log("-".repeat(60));
 
   {
-    const tx = await contract.markDelivered(purchaseId);
+    const tx = await contract.markDelivered(purchaseId, gasOpts);
     const receipt = await tx.wait();
     logTx("markDelivered(purchaseId)", receipt);
 
@@ -245,6 +283,8 @@ async function main() {
     console.log();
   }
 
+  await wait(3000);
+
   // -------------------------------------------------------
   // 7. Buyer confirms — escrow releases to seller balance
   // -------------------------------------------------------
@@ -253,7 +293,9 @@ async function main() {
   console.log("-".repeat(60));
 
   {
-    const tx = await contract.connect(buyer).confirmDelivery(purchaseId);
+    const tx = await contract
+      .connect(buyer)
+      .confirmDelivery(purchaseId, gasOpts);
     const receipt = await tx.wait();
     logTx("confirmDelivery(purchaseId)", receipt);
 
@@ -261,10 +303,16 @@ async function main() {
     const escrow = await contract.getEscrow(purchaseId);
     const bal = await contract.getBalance(deployer.address);
     console.log(`  Status:    ${STATUS[p.status]}`);
-    console.log(`  Escrow:    ${ethers.formatUnits(escrow, 6)} USDC (released)`);
-    console.log(`  Claimable: ${ethers.formatUnits(bal, 6)} USDC`);
+    console.log(
+      `  Escrow:    ${ethers.formatUnits(escrow, 6)} USDC (released)`
+    );
+    console.log(
+      `  Claimable: ${ethers.formatUnits(bal, 6)} USDC`
+    );
     console.log();
   }
+
+  await wait(3000);
 
   // -------------------------------------------------------
   // 8. Seller claims revenue
@@ -275,14 +323,16 @@ async function main() {
 
   {
     const before = await usdc.balanceOf(deployer.address);
-    const tx = await contract.claimRevenue();
+    const tx = await contract.claimRevenue(gasOpts);
     const receipt = await tx.wait();
     logTx("claimRevenue()", receipt);
 
     const after = await usdc.balanceOf(deployer.address);
     console.log(`  Before: ${ethers.formatUnits(before, 6)} USDC`);
     console.log(`  After:  ${ethers.formatUnits(after, 6)} USDC`);
-    console.log(`  Earned: +${ethers.formatUnits(after - before, 6)} USDC`);
+    console.log(
+      `  Earned: +${ethers.formatUnits(after - before, 6)} USDC`
+    );
     console.log();
   }
 
