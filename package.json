@@ -6,7 +6,10 @@
     "compile": "npx hardhat compile",
     "test": "npx hardhat test",
     "deploy": "npx hardhat run scripts/deploy.js --network base-sepolia",
-    "demo": "npx hardhat run scripts/demo.js --network base-sepolia",
+    "deploy:v2": "npx hardhat run scripts/deployV2.js --network base-sepolia",
+    "demo": "npx hardhat run scripts/demoV2.js --network base-sepolia",
+    "demo:v1": "npx hardhat run scripts/demo.js --network base-sepolia",
+    "demo:v2": "npx hardhat run scripts/demoV2.js --network base-sepolia",
     "eas": "node scripts/eas.js"
   },
   "keywords": [

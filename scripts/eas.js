@@ -49,8 +49,8 @@ async function main() {
   console.log("ETH balance:", ethers.formatEther(balance));
 
   // Step 1: Register schema
-  const schemaRegistry = new SchemaRegistry(SCHEMA_REGISTRY_ADDRESS);
-  schemaRegistry.connect(signer);
+  const schemaRegistryBase = new SchemaRegistry(SCHEMA_REGISTRY_ADDRESS);
+  const schemaRegistry = schemaRegistryBase.connect(signer);
 
   let schemaUID;
   try {
@@ -89,8 +89,8 @@ async function main() {
   );
 
   // Step 2: Create attestations for demo agents
-  const eas = new EAS(EAS_ADDRESS);
-  eas.connect(signer);
+  const easBase = new EAS(EAS_ADDRESS);
+  const eas = easBase.connect(signer);
 
   const schemaEncoder = new SchemaEncoder(SCHEMA);
   const attestationUIDs = [];
@@ -133,7 +133,7 @@ async function main() {
 
     // Delay between attestations to avoid RPC rate limiting
     if (DEMO_AGENTS.indexOf(agent) < DEMO_AGENTS.length - 1) {
-      console.log("  Waiting 3s before next attestation...");
+      console.log("  Waiting 5s before next attestation...");
       await new Promise((r) => setTimeout(r, 5000));
     }
   }
